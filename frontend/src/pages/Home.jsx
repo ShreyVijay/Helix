@@ -1,15 +1,13 @@
 import React from 'react'
 import SideBar from '../components/SideBar'
 import MessageArea from '../components/MessageArea'
-import { useSelector } from 'react-redux'
-import getMessage from '../customHooks/getMessages'
+import useMessages from '../customHooks/getMessages'
 
 
 function Home() {
-  let {selectedUser}=useSelector(state=>state.user)
- getMessage()
+ useMessages()
   return (
-    <div className='w-full h-[100vh] flex  '>
+    <div className='page-fade flex h-[100vh] w-full overflow-hidden bg-brand-bg'>
      <SideBar/>
      <MessageArea/>
     </div>
