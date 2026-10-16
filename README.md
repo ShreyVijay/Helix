@@ -1,24 +1,22 @@
-# Loopin 💬
- 
-A real-time full-stack chat application built with React, Node.js, and Socket.io. Loopin lets users sign up, find other users, and exchange text messages and images instantly.
- 
+# Helix
+
+A real-time full-stack chat application built with React, Node.js, and Socket.io. Helix lets users sign up, find other users, and exchange text messages and images instantly.
+
 **Live demo:** https://loopin-frontend.onrender.com
- 
----
- 
+
 ## Features
- 
-- **Authentication** — Secure sign-up, login, and logout with JWT cookies and bcrypt password hashing
-- **Real-time messaging** — Instant message delivery powered by Socket.io
-- **Image sharing** — Send images in chat, uploaded via Cloudinary
-- **Online presence** — See which users are currently online
-- **User profiles** — Update your display name and avatar
-- **Redux state management** — Predictable global state for messages and users
----
- 
+
+- **Authentication** - Secure sign-up, login, and logout with JWT cookies and bcrypt password hashing
+- **Real-time messaging** - Instant message delivery powered by Socket.io
+- **Image sharing** - Send images in chat, uploaded via Cloudinary
+- **Online presence** - See which users are currently online
+- **User profiles** - Update your display name and avatar
+- **Redux state management** - Predictable global state for messages and users
+
 ## Tech Stack
- 
+
 ### Backend
+
 | Package | Purpose |
 |---|---|
 | Express 5 | HTTP server and REST API |
@@ -30,8 +28,9 @@ A real-time full-stack chat application built with React, Node.js, and Socket.io
 | Multer | Multipart file upload handling |
 | cookie-parser | Cookie middleware |
 | dotenv | Environment variable management |
- 
+
 ### Frontend
+
 | Package | Purpose |
 |---|---|
 | React 19 | UI framework |
@@ -43,165 +42,102 @@ A real-time full-stack chat application built with React, Node.js, and Socket.io
 | Tailwind CSS | Utility-first styling |
 | emoji-picker-react | In-chat emoji support |
 | react-icons | Icon library |
- 
----
- 
+
 ## Project Structure
- 
+
+```text
+Helix/
+  backend/
+    config/
+    controllers/
+    middlewares/
+    models/
+    routes/
+    socket/
+    index.js
+  frontend/
+    public/
+    src/
+      components/
+      customHooks/
+      pages/
+      redux/
+      App.jsx
 ```
-Loopin/
-├── backend/
-│   ├── config/
-│   │   ├── cloudinary.js       # Cloudinary setup
-│   │   ├── db.js               # MongoDB connection
-│   │   └── token.js            # JWT generation helper
-│   ├── controllers/
-│   │   ├── auth.controllers.js
-│   │   ├── message.controllers.js
-│   │   └── user.controllers.js
-│   ├── middlewares/
-│   │   ├── isAuth.js           # JWT auth guard
-│   │   └── multer.js           # File upload config
-│   ├── models/
-│   │   ├── conversation.model.js
-│   │   ├── message.model.js
-│   │   └── user.model.js
-│   ├── routes/
-│   │   ├── auth.routes.js
-│   │   ├── message.routes.js
-│   │   └── user.routes.js
-│   ├── socket/
-│   │   └── socket.js           # Socket.io server + online users map
-│   └── index.js                # App entry point
-└── frontend/
-    ├── public/
-    │   └── logo.png
-    └── src/
-        ├── components/
-        │   ├── MessageArea.jsx
-        │   ├── ReceiverMessage.jsx
-        │   ├── SenderMessage.jsx
-        │   └── SideBar.jsx
-        ├── customHooks/
-        │   ├── getCurrentUser.jsx
-        │   ├── getMessages.jsx
-        │   └── getOtherUsers.jsx
-        ├── pages/
-        │   ├── Home.jsx
-        │   ├── Login.jsx
-        │   ├── Profile.jsx
-        │   └── SignUp.jsx
-        ├── redux/
-        │   ├── messageSlice.js
-        │   ├── store.js
-        │   └── userSlice.js
-        └── App.jsx
-```
- 
----
- 
+
 ## API Reference
- 
-### Auth — `/api/auth`
+
+### Auth - `/api/auth`
+
 | Method | Endpoint | Description |
 |---|---|---|
 | POST | `/signup` | Register a new user |
 | POST | `/login` | Log in and receive a JWT cookie |
 | GET | `/logout` | Clear the auth cookie |
- 
-### Messages — `/api/message` *(requires auth)*
+
+### Messages - `/api/message` (requires auth)
+
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/send/:receiverId` | Send a message (text or image) |
+| POST | `/send/:receiverId` | Send a message with text, an image, or both |
 | GET | `/get/:receiverId` | Fetch conversation with a user |
- 
-### Users — `/api/user` *(requires auth)*
+
+### Users - `/api/user` (requires auth)
+
 | Method | Endpoint | Description |
 |---|---|---|
 | GET | `/` | Get all users except the current one |
-| PUT | `/update` | Update profile name and/or avatar |
- 
----
- 
+| GET | `/search` | Search users |
+| PUT | `/profile` | Update profile name and/or avatar |
+
 ## Getting Started
- 
+
 ### Prerequisites
- 
+
 - Node.js 18+
-- MongoDB (local or Atlas)
-- A [Cloudinary](https://cloudinary.com) account (free tier works)
-### 1. Clone the repository
- 
-```bash
-git clone <your-repo-url>
-cd Loopin
-```
- 
-### 2. Configure the backend
- 
+- MongoDB local or Atlas
+- A Cloudinary account
+
+### Backend
+
 ```bash
 cd backend
+npm install
+npm run dev
 ```
- 
-Create a `.env` file:
- 
+
+Create `backend/.env` from `backend/.env.example` with:
+
 ```env
 PORT=5000
-MONGO_URI=your_mongodb_connection_string
+MONGODB_URL=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
+CLOUD_NAME=your_cloudinary_cloud_name
+API_KEY=your_cloudinary_api_key
+API_SECRET=your_cloudinary_api_secret
+CORS_ORIGIN=http://localhost:5173
 ```
- 
-Install dependencies and start the dev server:
- 
+
+### Frontend
+
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
- 
-The backend runs on `http://localhost:5000`.
- 
-### 3. Configure the frontend
- 
-```bash
-cd ../frontend
-npm install
-npm run dev
-```
- 
-The frontend runs on `http://localhost:5173`.
- 
-> **Note:** For local development, update the CORS origin in `backend/index.js` and `backend/socket/socket.js` to `http://localhost:5173`, and point Axios calls in the frontend to `http://localhost:5000`.
- 
----
- 
-## How It Works
- 
-**Authentication** is handled with JWTs stored in HTTP-only cookies. The `isAuth` middleware validates the token on protected routes.
- 
-**Real-time messaging** uses Socket.io. When a user connects, their `socket.id` is stored in a server-side `userSocketMap` keyed by `userId`. When a message is sent, the server looks up the receiver's socket ID and emits directly to that socket. The same map is broadcast to all clients to power the online presence indicator.
- 
-**Image uploads** go through Multer (which holds the file in memory) then get streamed to Cloudinary. The returned URL is stored in the message document.
- 
-**State management** on the frontend uses Redux Toolkit slices for the current user (`userSlice`) and the active conversation's messages (`messageSlice`). Custom hooks encapsulate data-fetching logic and socket subscriptions.
- 
----
- 
+
+The frontend runs on `http://localhost:5173`. It uses `VITE_API_URL` for the API address and defaults to `http://localhost:5000` for local development.
+
 ## Deployment
- 
-Both services are deployed on [Render](https://render.com).
- 
-| Service | Type | Root directory |
-|---|---|---|
-| Backend | Web Service (Node) | `backend/` |
-| Frontend | Static Site | `frontend/` |
- 
-Set all `.env` variables as environment variables in the Render dashboard. The frontend build command is `npm run build` with the publish directory set to `dist/`.
- 
----
- 
+
+### Render deployment
+
+This repository includes a Render Blueprint in `render.yaml` for a Node web service and a Vite static site. In Render, create a new Blueprint and select this repository. Render will prompt for `MONGODB_URL` and the three Cloudinary values. `JWT_SECRET` is generated automatically; service URLs and frontend CORS are wired from the Blueprint.
+
+Before deploying, create a MongoDB Atlas database and allow connections from Render (Atlas Network Access may require `0.0.0.0/0` when using Render's shared outbound IPs). Create a Cloudinary account for image uploads. Keep these values in Render's environment settings and do not commit credentials.
+
+The API health endpoint is `/health`. Render's static site rewrite sends client-side routes to `index.html`.
+
 ## License
- 
+
 ISC

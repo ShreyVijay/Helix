@@ -1,27 +1,33 @@
 import React, { useEffect, useRef } from 'react'
-import dp from "../assets/dp.webp"
 import { useSelector } from 'react-redux'
-function ReceiverMessage({image,message}) {
-  let scroll=useRef()
-  let {selectedUser}=useSelector(state=>state.user)
-  useEffect(()=>{
-    scroll?.current.scrollIntoView({behavior:"smooth"})
-  },[message,image])
-  
-  const handleImageScroll=()=>{
-    scroll?.current.scrollIntoView({behavior:"smooth"})
+import dp from '../assets/dp.webp'
+
+function formatTime(value) {
+  if (!value) return ''
+  return new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
+function ReceiverMessage({ image, message, createdAt }) {
+  const scroll = useRef()
+  const { selectedUser } = useSelector((state) => state.user)
+
+  useEffect(() => {
+    scroll?.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [message, image])
+
+  const handleImageScroll = () => {
+    scroll?.current?.scrollIntoView({ behavior: 'smooth' })
   }
+
   return (
-    <div className='flex items-start gap-[10px]' >
-           <div className='w-[40px] h-[40px] rounded-full overflow-hidden flex justify-center items-center bg-white cursor-pointer shadow-gray-500 shadow-lg ' >
-         <img src={selectedUser.image || dp} alt="" className='h-[100%]'/>
-         </div>
-          <div ref={scroll} className='w-fit max-w-[500px] px-[20px] py-[10px]  bg-[rgb(70,98,70)] text-white text-[19px] rounded-tl-none rounded-2xl relative left-0  shadow-gray-400 shadow-lg gap-[10px] flex flex-col'>
-        {image &&  <img src={image} alt="" className='w-[150px] rounded-lg' onLoad={handleImageScroll}/>}
-       {message && <span >{message}</span>}
-       </div>
-     
-        </div>
+    <div className="message-enter flex items-start gap-3 self-start" ref={scroll}>
+      <img src={selectedUser?.image || dp} alt={selectedUser?.name || 'Sender'} className="hidden h-9 w-9 rounded-2xl object-cover shadow-soft sm:block" />
+      <div className="flex max-w-[min(78vw,520px)] flex-col gap-2 rounded-[22px] rounded-tl-md border border-brand-border bg-brand-surface px-4 py-3 text-slate-100 shadow-soft">
+        {image && <img src={image} alt="Received attachment" className="max-h-[280px] w-full max-w-[260px] rounded-2xl object-cover" onLoad={handleImageScroll} />}
+        {message && <span className="whitespace-pre-wrap break-words text-[15px] leading-6">{message}</span>}
+        {createdAt && <span className="self-start text-[11px] font-medium text-brand-muted">{formatTime(createdAt)}</span>}
+      </div>
+    </div>
   )
 }
 

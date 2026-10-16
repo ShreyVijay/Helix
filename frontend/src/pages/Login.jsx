@@ -1,59 +1,113 @@
 import axios from 'axios'
 import React, { useState } from 'react'
+import { FiEye, FiEyeOff, FiLock, FiMail } from 'react-icons/fi'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { serverUrl } from '../main'
-import { useDispatch, useSelector } from 'react-redux'
 import { setSelectedUser, setUserData } from '../redux/userSlice'
 
 function Login() {
-    let navigate=useNavigate()
-    let [show,setShow]=useState(false)
-    let [email,setEmail]=useState("")
-    let [password,setPassword]=useState("")
-    let [loading,setLoading]=useState(false)
-    let [err,setErr]=useState("")
-    let dispatch=useDispatch()
-    
-        const handleLogin=async (e)=>{
-            e.preventDefault()
-            setLoading(true)
-            try {
-                let result =await axios.post(`${serverUrl}/api/auth/login`,{
-    email,password
-                },{withCredentials:true})
-               dispatch(setUserData(result.data))
-               dispatch(setSelectedUser(null))
-               navigate("/")
-                setEmail("")
-                setPassword("")
-                setLoading(false)
-                setErr("")
-            } catch (error) {
-                console.log(error)
-                setLoading(false)
-                setErr(error.response.data.message)
-            }
-        }
-    
+  const navigate = useNavigate()
+  const [show, setShow] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [err, setErr] = useState('')
+  const dispatch = useDispatch()
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      const result = await axios.post(
+        `${serverUrl}/api/auth/login`,
+        {
+          email: email.trim(),
+          password,
+        },
+        { withCredentials: true },
+      )
+      dispatch(setUserData(result.data))
+      dispatch(setSelectedUser(null))
+      navigate('/')
+      setEmail('')
+      setPassword('')
+      setLoading(false)
+      setErr('')
+    } catch (error) {
+      console.log(error)
+      setLoading(false)
+      setErr(error?.response?.data?.message || 'Login failed. Please try again.')
+    }
+  }
+
   return (
-    <div className='w-full h-[100vh] bg-slate-200 flex items-center justify-center'>
-     <div className='w-full max-w-[500px] h-[600px] bg-green-50
-      rounded-lg shadow-gray-300 shadow-lg flex flex-col gap-[30px]'>
-        <div className='w-full h-[200px] bg-[#28341e] rounded-b-[30%] shadow-gray-400 shadow-lg flex items-center justify-center'>
-           <h1 className='text-gray-300 font-bold text-[30px]'>Let's get you <span  className='text-white'>Loopin</span></h1>
+    <div className="page-fade flex min-h-[100vh] w-full bg-brand-bg text-white">
+      <section className="hidden flex-1 flex-col justify-between border-r border-brand-border bg-brand-surface/50 p-10 lg:flex">
+        <div className="flex items-center gap-3">
+          <div className="brand-mark">H</div>
+          <span className="text-xl font-bold">Helix</span>
         </div>
-        <form className='w-full flex flex-col gap-[20px] items-center' onSubmit={handleLogin}>
-        <input type="email" placeholder='email' className='w-[90%] h-[50px] outline-none border-2 border-[#4a5f40] px-[20px] py-[10px] bg-green-50 rounded-lg shadow-gray-200 shadow-lg text-gray-700 text-[19px]' onChange={(e)=>setEmail(e.target.value)} value={email}/>
-        <div className='w-[90%] h-[50px] border-2 border-[#4e6d56] overflow-hidden rounded-lg shadow-gray-200 shadow-lg relative'>
-        <input type={`${show?"text":"password"}`} placeholder='password' className='w-full h-full outline-none  px-[20px] py-[10px] bg-green-50 text-gray-700 text-[19px]' onChange={(e)=>setPassword(e.target.value)} value={password}/>
-        <span className='absolute top-[10px] right-[20px] text-[19px] text-[#4d6b46] font-semibold cursor-pointer' onClick={()=>setShow(prev=>!prev)}>{`${show?"hidden":"show"}`}</span>
+        <div className="max-w-xl">
+          <h1 className="text-5xl font-bold leading-tight">Welcome back to Helix</h1>
+          <p className="mt-5 text-lg leading-8 text-brand-muted">Pick up your conversations in a focused, real-time workspace.</p>
         </div>
-{err && <p className='text-red-500'>{"*" + err}</p>}
-        <button className='px-[20px] py-[10px] bg-[#70895e] rounded-2xl shadow-gray-400 shadow-lg text-[20px] w-[200px] mt-[20px] font-semibold hover:shadow-inner' disabled={loading}>{loading?"Loading...":"Login"}</button>
-        <p className='cursor-pointer' onClick={()=>navigate("/signup")}>Want to create a new account ? <span className='text-[#577b4d] text-[bold]' >sign up</span></p>
-     </form>
-     </div>
-     
+        <p className="text-sm text-brand-muted">Secure chat with live presence and image sharing.</p>
+      </section>
+
+      <section className="flex min-h-[100vh] flex-1 items-center justify-center px-4 py-8 sm:px-6">
+        <form className="glass-panel slide-up w-full max-w-md rounded-[28px] p-6 sm:p-8" onSubmit={handleLogin}>
+          <div className="mb-8 flex items-center gap-3 lg:hidden">
+            <div className="brand-mark">H</div>
+            <span className="text-xl font-bold">Helix</span>
+          </div>
+          <h2 className="text-3xl font-bold">Log in</h2>
+          <p className="mt-2 text-sm text-brand-muted">Enter your account details to continue.</p>
+
+          <div className="mt-8 flex flex-col gap-4">
+            <label className="flex h-14 items-center gap-3 rounded-2xl border border-brand-border bg-brand-bg/70 px-4 text-brand-muted">
+              <FiMail size={20} />
+              <input
+                type="email"
+                placeholder="Email"
+                className="h-full min-w-0 flex-1 border-0 bg-transparent text-white outline-none placeholder:text-brand-muted"
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
+              />
+            </label>
+
+            <label className="flex h-14 items-center gap-3 rounded-2xl border border-brand-border bg-brand-bg/70 px-4 text-brand-muted">
+              <FiLock size={20} />
+              <input
+                type={show ? 'text' : 'password'}
+                placeholder="Password"
+                className="h-full min-w-0 flex-1 border-0 bg-transparent text-white outline-none placeholder:text-brand-muted"
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+              />
+              <button type="button" className="text-brand-muted transition hover:text-white" title={show ? 'Hide password' : 'Show password'} onClick={() => setShow((prev) => !prev)}>
+                {show ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+              </button>
+            </label>
+          </div>
+
+          {err && <p className="mt-4 rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">{err}</p>}
+
+          <button
+            className="mt-6 h-14 w-full rounded-2xl bg-brand-primary font-semibold text-white shadow-glow transition hover:bg-brand-accent disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={loading}
+          >
+            {loading ? 'Logging in...' : 'Log in'}
+          </button>
+
+          <p className="mt-6 text-center text-sm text-brand-muted">
+            New to Helix?{' '}
+            <button type="button" className="font-semibold text-white transition hover:text-brand-accent" onClick={() => navigate('/signup')}>
+              Create an account
+            </button>
+          </p>
+        </form>
+      </section>
     </div>
   )
 }
