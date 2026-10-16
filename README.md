@@ -106,15 +106,16 @@ npm install
 npm run dev
 ```
 
-Create a `.env` file with:
+Create `backend/.env` from `backend/.env.example` with:
 
 ```env
 PORT=5000
-MONGO_URI=your_mongodb_connection_string
+MONGODB_URL=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
+CLOUD_NAME=your_cloudinary_cloud_name
+API_KEY=your_cloudinary_api_key
+API_SECRET=your_cloudinary_api_secret
+CORS_ORIGIN=http://localhost:5173
 ```
 
 ### Frontend
@@ -125,11 +126,17 @@ npm install
 npm run dev
 ```
 
-The frontend runs on `http://localhost:5173`.
+The frontend runs on `http://localhost:5173`. It uses `VITE_API_URL` for the API address and defaults to `http://localhost:5000` for local development.
 
 ## Deployment
 
-Both services are deployed on Render. The frontend build command is `npm run build` with the publish directory set to `dist/`.
+### Render deployment
+
+This repository includes a Render Blueprint in `render.yaml` for a Node web service and a Vite static site. In Render, create a new Blueprint and select this repository. Render will prompt for `MONGODB_URL` and the three Cloudinary values. `JWT_SECRET` is generated automatically; service URLs and frontend CORS are wired from the Blueprint.
+
+Before deploying, create a MongoDB Atlas database and allow connections from Render (Atlas Network Access may require `0.0.0.0/0` when using Render's shared outbound IPs). Create a Cloudinary account for image uploads. Keep these values in Render's environment settings and do not commit credentials.
+
+The API health endpoint is `/health`. Render's static site rewrite sends client-side routes to `index.html`.
 
 ## License
 
