@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { IoIosArrowRoundBack } from 'react-icons/io'
 import { RiEmojiStickerLine, RiSendPlane2Fill } from 'react-icons/ri'
 import { FaImages } from 'react-icons/fa6'
-import { RxCross2 } from 'react-icons/rx'
 import EmojiPicker from 'emoji-picker-react'
 import axios from 'axios'
 import { useDispatch, useSelector } from 'react-redux'
@@ -32,44 +31,34 @@ function MessageArea() {
   const [input, setInput] = useState('')
   const [frontendImage, setFrontendImage] = useState(null)
   const [backendImage, setBackendImage] = useState(null)
-  const [sendError, setSendError] = useState('')
   const image = useRef()
   const isOnline = selectedUser && onlineUsers?.includes(selectedUser._id)
 
   const handleImage = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files[0]
     setBackendImage(file)
     setFrontendImage(URL.createObjectURL(file))
-    setSendError('')
-  }
-
-  const clearImage = () => {
-    setBackendImage(null)
-    setFrontendImage(null)
-    if (image.current) image.current.value = ''
   }
 
   const handleSendMessage = async (e) => {
     e.preventDefault()
-    if (!input.trim() && backendImage == null) return
+    if (input.length === 0 && backendImage == null) return
 
     try {
       const formData = new FormData()
-      formData.append('message', input.trim())
+      formData.append('message', input)
       if (backendImage) {
         formData.append('image', backendImage)
       }
       const result = await axios.post(`${serverUrl}/api/message/send/${selectedUser._id}`, formData, {
         withCredentials: true,
       })
-      dispatch(setMessages([...(messages || []), result.data]))
+      dispatch(setMessages([...messages, result.data]))
       setInput('')
-      clearImage()
-      setSendError('')
+      setFrontendImage(null)
+      setBackendImage(null)
     } catch (error) {
       console.log(error)
-      setSendError(error?.response?.data?.message || 'Message could not be sent. Please try again.')
     }
   }
 
@@ -79,13 +68,11 @@ function MessageArea() {
   }
 
   useEffect(() => {
-    const handleNewMessage = (mess) => {
-      dispatch(setMessages([...(messages || []), mess]))
-    }
-
-    socket?.on('newMessage', handleNewMessage)
-    return () => socket?.off('newMessage', handleNewMessage)
-  }, [socket, messages, dispatch])
+    socket?.on('newMessage',(mess)=>{
+      dispatch(setMessages([...messages,mess]))
+    })
+    return ()=>socket?.off('newMessage')
+  }, [messages,setMessages])
 
   return (
     <main className={`relative h-full min-w-0 flex-1 bg-brand-bg ${selectedUser ? 'flex' : 'hidden'} lg:flex`}>
@@ -131,14 +118,10 @@ function MessageArea() {
           <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-brand-bg via-brand-bg/96 to-transparent px-4 pb-4 pt-12 sm:px-6">
             <div className="pointer-events-auto mx-auto w-full max-w-4xl">
               {frontendImage && (
-                <div className="slide-up mb-3 inline-flex items-center gap-3 rounded-2xl border border-brand-border bg-brand-surface p-2 shadow-soft">
+                <div className="slide-up mb-3 inline-flex rounded-2xl border border-brand-border bg-brand-surface p-2 shadow-soft">
                   <img src={frontendImage} alt="Selected upload preview" className="h-16 w-16 rounded-xl object-cover" />
-                  <button type="button" className="icon-button h-10 w-10" title="Remove image" onClick={clearImage}>
-                    <RxCross2 size={20} />
-                  </button>
                 </div>
               )}
-              {sendError && <p className="mb-3 rounded-2xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">{sendError}</p>}
               <form className="glass-panel flex min-h-[68px] items-center gap-2 rounded-[24px] px-3 sm:gap-3 sm:px-4" onSubmit={handleSendMessage}>
                 <button className="icon-button" type="button" title="Choose emoji" onClick={() => setShowPicker((prev) => !prev)}>
                   <RiEmojiStickerLine size={22} />
@@ -148,10 +131,7 @@ function MessageArea() {
                   type="text"
                   className="h-12 min-w-0 flex-1 border-0 bg-transparent px-2 text-base text-white outline-none placeholder:text-brand-muted"
                   placeholder="Message"
-                  onChange={(e) => {
-                    setInput(e.target.value)
-                    setSendError('')
-                  }}
+                  onChange={(e) => setInput(e.target.value)}
                   value={input}
                 />
                 <button className="icon-button" type="button" title="Upload image" onClick={() => image.current.click()}>
@@ -161,7 +141,7 @@ function MessageArea() {
                   className="icon-button bg-brand-primary text-white hover:bg-brand-accent"
                   type="submit"
                   title="Send message"
-                  disabled={!input.trim() && backendImage == null}
+                  disabled={input.length === 0 && backendImage == null}
                 >
                   <RiSendPlane2Fill size={21} />
                 </button>

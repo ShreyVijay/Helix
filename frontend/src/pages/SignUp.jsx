@@ -23,15 +23,14 @@ function SignUp() {
       const result = await axios.post(
         `${serverUrl}/api/auth/signup`,
         {
-          userName: userName.trim(),
-          email: email.trim(),
+          userName,
+          email,
           password,
         },
         { withCredentials: true },
       )
       dispatch(setUserData(result.data))
       navigate('/profile')
-      setUserName('')
       setEmail('')
       setPassword('')
       setLoading(false)
@@ -39,7 +38,7 @@ function SignUp() {
     } catch (error) {
       console.log(error)
       setLoading(false)
-      setErr(error?.response?.data?.message || 'Sign up failed. Please try again.')
+      setErr(error?.response?.data?.message)
     }
   }
 

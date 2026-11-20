@@ -18,23 +18,22 @@ function SideBar() {
 
   const onlineSet = useMemo(() => new Set(onlineUsers || []), [onlineUsers])
   const onlineUsersList = (otherUsers || []).filter((user) => onlineSet.has(user._id))
-  const visibleUsers = input.trim() ? searchData || [] : otherUsers || []
+  const visibleUsers = input ? searchData || [] : otherUsers || []
 
   const handleLogOut = async () => {
     try {
       await axios.get(`${serverUrl}/api/auth/logout`, { withCredentials: true })
       dispatch(setUserData(null))
       dispatch(setOtherUsers(null))
-      dispatch(setSelectedUser(null))
       navigate('/login')
     } catch (error) {
       console.log(error)
     }
   }
 
-  const handleSearch = useCallback(async () => {
+  const handlesearch = useCallback(async () => {
     try {
-      const result = await axios.get(`${serverUrl}/api/user/search?query=${encodeURIComponent(input.trim())}`, {
+      const result = await axios.get(`${serverUrl}/api/user/search?query=${input}`, {
         withCredentials: true,
       })
       dispatch(setSearchData(result.data))
@@ -44,16 +43,14 @@ function SideBar() {
   }, [input, dispatch])
 
   useEffect(() => {
-    if (input.trim()) {
-      handleSearch()
-    } else {
-      dispatch(setSearchData(null))
+    if (input) {
+      handlesearch()
     }
-  }, [dispatch, handleSearch, input])
+  }, [input])
 
   const openConversation = (user) => {
     dispatch(setSelectedUser(user))
-    setInput('')
+    if (input) setInput('')
   }
 
   return (
@@ -92,7 +89,7 @@ function SideBar() {
           )}
         </label>
 
-        {onlineUsersList.length > 0 && !input.trim() && (
+        {onlineUsersList.length > 0 && !input && (
           <div className="mt-5">
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-brand-muted">Online</p>
             <div className="flex gap-3 overflow-x-auto pb-1">
@@ -114,7 +111,7 @@ function SideBar() {
 
         <div className="mt-5 min-h-0 flex-1 overflow-y-auto pr-1">
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-brand-muted">
-            {input.trim() ? 'Search results' : 'Conversations'}
+            {input ? 'Search results' : 'Conversations'}
           </p>
           <div className="flex flex-col gap-2">
             {visibleUsers.map((user) => {

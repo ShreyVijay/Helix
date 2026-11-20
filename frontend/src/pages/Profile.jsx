@@ -20,8 +20,7 @@ function Profile() {
   const image = useRef()
 
   const handleImage = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files[0]
     setBackendImage(file)
     setFrontendImage(URL.createObjectURL(file))
   }

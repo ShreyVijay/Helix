@@ -1,11 +1,12 @@
 import axios from "axios"
 import { useEffect } from "react"
 import { serverUrl } from "../main"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { setUserData } from "../redux/userSlice"
 
-const useCurrentUser=()=>{
+const getCurrentUser=()=>{
     let dispatch=useDispatch()
+    let {userData}=useSelector(state=>state.user)
     useEffect(()=>{
         const fetchUser=async ()=>{
             try {
@@ -16,7 +17,7 @@ const useCurrentUser=()=>{
             }
         }
         fetchUser()
-    },[dispatch])
+    },[])
 }
 
-export default useCurrentUser
+export default getCurrentUser

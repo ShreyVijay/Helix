@@ -136,7 +136,7 @@ This repository includes a Render Blueprint in `render.yaml` for a Node web serv
 
 Before deploying, create a MongoDB Atlas database and allow connections from Render (Atlas Network Access may require `0.0.0.0/0` when using Render's shared outbound IPs). Create a Cloudinary account for image uploads. Keep these values in Render's environment settings and do not commit credentials.
 
-The API health endpoint is `/health`. Render's static site rewrite sends client-side routes to `index.html`.
+Render's static site rewrite sends client-side routes to `index.html`.
 
 ## License
 

@@ -1,37 +1,29 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
-import useCurrentUser from './customHooks/getCurrentUser'
+import getCurrentUser from './customHooks/getCurrentUser'
 import { useDispatch, useSelector } from 'react-redux'
 import Home from './pages/Home'
 import Profile from './pages/Profile'
-import useOtherUsers from './customHooks/getOtherUsers'
+import getOtherUsers from './customHooks/getOtherUsers'
 import {io} from "socket.io-client"
 import { serverUrl } from './main'
 import { setOnlineUsers, setSocket } from './redux/userSlice'
 
 function App() {
-  useCurrentUser()
-  useOtherUsers()
-  let {userData}=useSelector(state=>state.user)
+  getCurrentUser()
+  getOtherUsers()
+  let {userData,socket,onlineUsers}=useSelector(state=>state.user)
   let dispatch=useDispatch()
-  const socketRef = useRef(null)
 
   useEffect(()=>{
-    if (socketRef.current) {
-      socketRef.current.close()
-      socketRef.current = null
-      dispatch(setSocket(null))
-    }
-
     if(userData){
       const socketio=io(`${serverUrl}`,{
         query:{
           userId:userData?._id
         }
         })
-        socketRef.current = socketio
         dispatch(setSocket(socketio))
         
         socketio.on("getOnlineUsers",(users)=>{
@@ -39,10 +31,15 @@ function App() {
         })
         
         return ()=>socketio.close()
+    }else{
+      if(socket){
+        socket.close()
+        dispatch(setSocket(null))
+      }
     }
 
 
-  },[dispatch,userData])
+  },[userData])
 
   return (
     <Routes>

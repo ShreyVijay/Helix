@@ -1,6 +1,5 @@
 import express from "express";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 import connectDb from "./config/db.js";
 import authRouter from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
@@ -28,23 +27,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/message", messageRouter);
 
-app.get("/health", (_req, res) => {
-  const databaseReady = mongoose.connection.readyState === 1;
-  res.status(databaseReady ? 200 : 503).json({
-    status: databaseReady ? "ok" : "database unavailable",
-  });
-});
-
-const start = async () => {
-  if (!process.env.MONGODB_URL) throw new Error("MONGODB_URL must be configured");
-  if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET must be configured");
-  await connectDb();
-  server.listen(port, "0.0.0.0", () => {
-    console.log(`server started on port ${port}`);
-  });
-};
-
-start().catch((error) => {
-  console.error("server startup failed:", error);
-  process.exit(1);
+server.listen(port, () => {
+  connectDb();
+  console.log("server started");
 });
